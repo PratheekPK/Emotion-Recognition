@@ -22,7 +22,7 @@ def extract_feature(file_name):
         
         stft=np.abs(librosa.stft(X))
         
-        
+        #extracting the mfccs, chroma, stft and mel from the .wav file
         mfccs=np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)
         result=np.hstack((result, mfccs))
         
@@ -39,7 +39,8 @@ def extract_feature(file_name):
 def load_ravdess_data():
     feature_list=[]
     emotion_list=[]
-        
+    
+    #extracting all the files with the .wav format in the folder
     for file in glob.glob("C:\\Users\\hp\\Downloads\\speech-emotion-recognition-ravdess-data\\Actor_*\\*.wav"):
         file_name=os.path.basename(file)
         emotion=emotions[file_name.split("-")[2]]
@@ -56,6 +57,7 @@ def load_savee_data():
     feature_list=[]
     emotion_list=[]
     
+    #extracting all the files with the .wav format in the folder
     for file in glob.glob("C:\\Users\\hp\\Downloads\\SAVEE\\ALL\\*.wav"):
         file_name=os.path.basename(file)
         emotion_name=file_name.split("_")[1]
@@ -92,10 +94,11 @@ def load_oaf_tess_data():
     feature_list=[]
     emotion_list=[]
     
+    #extracting all the files with the .wav format in the folder
     for file in glob.glob("C:\\Users\\hp\\Downloads\\TESS\\TESS Toronto emotional speech set data\\OAF_*\\*.wav"):
         file_name=os.path.basename(file)
         emotion_name=file_name.split("_")[2]
-        print(emotion_name)
+        #print(emotion_name)
         if emotion_name=='angry.wav':
             emotion=emotions["05"]
             
@@ -127,10 +130,11 @@ def load_yaf_tess_data():
     feature_list=[]
     emotion_list=[]
     
+    #extracting all the files with the .wav format in the folder
     for file in glob.glob("C:\\Users\\hp\\Downloads\\TESS\\TESS Toronto emotional speech set data\\YAF_*\\*.wav"):
         file_name=os.path.basename(file)
         emotion_name=file_name.split("_")[2]
-        print(emotion_name)
+        #print(emotion_name)
         if emotion_name=='angry.wav':
             emotion=emotions["05"]
             
@@ -164,27 +168,33 @@ def load_yaf_tess_data():
 if __name__=='__main__':
     
     emotions={'01':'neutral', '02':'calm', '03':'happy', '04':'sad', '05':'angry', '06':'fearful', '07':'disgust', '08':'surprised'}
-    
+    #list of emotions that we will be using
     
     ravdess_feature_list, ravdess_emotion_list=load_ravdess_data()
+    #extracting the feature list and emotion list from the ravdess dataset
     
     savee_feature_list, savee_emotion_list=load_savee_data()
+    #extracting the feature list and emotion list from the savee dataset
     
     tess_oaf_feature_list, tess_oaf_emotion_list=load_oaf_tess_data()
+    #extracting the feature list and emotion list from the tessoaf dataset
     
     tess_yaf_feature_list, tess_yaf_emotion_list=load_yaf_tess_data()
+    #extracting the feature list and emotion list from the tessyaf dataset
     
         
     final_feature_list=ravdess_feature_list+savee_feature_list+tess_oaf_feature_list+tess_yaf_feature_list
+    #concatenating the feature lists
 
     final_emotion_list=ravdess_emotion_list+savee_emotion_list+tess_oaf_emotion_list+tess_yaf_emotion_list
+    #concatenating the emotion lists
 
     x_train,x_test,y_train,y_test=train_test_split(np.array(final_feature_list), final_emotion_list, test_size=0.2)
-
+    #train test split
 
     
     model=MLPClassifier(alpha=0.01, batch_size=256, epsilon=1e-08, hidden_layer_sizes=(300,), learning_rate='adaptive', max_iter=500)
-    
+    #using the vanilla MLP Classifier present in the sklearn library
     
     model.fit(x_train,y_train)
     
